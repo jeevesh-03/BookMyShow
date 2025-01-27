@@ -56,7 +56,7 @@ public class UserServiceImplementation implements UserService {
         return UserToResponse.convertEntity(u);
     }
 
-    public UserResponse getUser(String name, Long id){
+    public UserResponse getUser(String name, Long id) throws RuntimeException{
         if(name==null && id==null) return null;
         if(name==null){
             Users u=userRepository.findUserById(id);
