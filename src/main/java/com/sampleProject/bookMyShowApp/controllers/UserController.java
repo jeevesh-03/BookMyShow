@@ -1,16 +1,11 @@
 package com.sampleProject.bookMyShowApp.controllers;
 
-import com.sampleProject.bookMyShowApp.entities.Show;
-import com.sampleProject.bookMyShowApp.entities.Users;
+
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.response.UserResponse;
-import com.sampleProject.bookMyShowApp.services.ShowDetailsService;
-import com.sampleProject.bookMyShowApp.services.TransactionService;
 import com.sampleProject.bookMyShowApp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,10 +13,6 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private TransactionService transactionService;
-    @Autowired
-    private ShowDetailsService showDetailsService;
 
     @GetMapping("/getAllUsers")
     public List<UserResponse> getAll(){
@@ -29,7 +20,7 @@ public class UserController {
     }
 
     @GetMapping("getUser")
-    public UserResponse getUser(@RequestParam(value="name", required=false) String name, @RequestParam(value="id", required=false) Long id){
+    public UserResponse getUser(@RequestParam(value="name", required=false) String name, @RequestParam(value="id", required=false) Long id) throws RuntimeException{
         return userService.getUser(name,id);
     }
 
@@ -43,4 +34,8 @@ public class UserController {
         return userService.getShows(userId);
     }
 
+    @PutMapping("update")
+    public UserResponse updateUser(@RequestParam("id") Long id, @RequestParam("age") Integer age, @RequestParam("city") String city, @RequestParam("name") String name){
+        return userService.updateUser(id,age,city,name);
+    }
 }

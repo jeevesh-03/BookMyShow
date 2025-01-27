@@ -75,4 +75,22 @@ public class UserServiceImplementation implements UserService {
         String city=u.getCity();
         return ShowToResponse.convertList(showDetailsService.findShowsByCity(city));
     }
+
+    public UserResponse updateUser(Long id, Integer age, String city, String name) throws RuntimeException{
+        try {
+            Users u=userRepository.findUserById(id);
+            if(u==null){
+                throw new RuntimeException("No user exists with id "+id.toString());
+            }
+            u.setAge(age);
+            u.setCity(city);
+            u.setName(name);
+            userRepository.save(u);
+            return UserToResponse.convertEntity(u);
+        }
+        catch (RuntimeException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
 }

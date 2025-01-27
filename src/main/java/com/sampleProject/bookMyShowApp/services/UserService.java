@@ -22,7 +22,9 @@ public interface UserService {
 
     UserResponse createUser(String name, Integer age, String city, Long walletBalance);
 
-    UserResponse getUser(String name, Long id);
+    UserResponse getUser(String name, Long id) throws RuntimeException;
 
     List<ShowResponse> getShows(Long userId);
+
+    UserResponse updateUser(Long id, Integer age, String city, String name);
 }
