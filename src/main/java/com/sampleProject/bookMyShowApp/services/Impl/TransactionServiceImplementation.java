@@ -3,6 +3,8 @@ package com.sampleProject.bookMyShowApp.services.Impl;
 import com.sampleProject.bookMyShowApp.entities.Show;
 import com.sampleProject.bookMyShowApp.entities.Transaction;
 import com.sampleProject.bookMyShowApp.entities.Users;
+import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
+import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.helper.TransactionToResponse;
 import com.sampleProject.bookMyShowApp.repositories.TransactionRepository;
 import com.sampleProject.bookMyShowApp.response.TransactionResponse;
@@ -40,36 +42,36 @@ public class TransactionServiceImplementation implements TransactionService {
     }
 
     @Override
-    public String createTransaction(Long userId, Long showId, Integer ticketCount) throws IllegalArgumentException, RuntimeException{
+    public String createTransaction(Long userId, Long showId, Integer ticketCount) throws WrongArgumentException, NotFoundException{
         try {
             Users u = userService.findUserById(userId);
             Show s = showDetailsService.findShowById(showId);
 
             if (u == null || s == null) {
-                throw new IllegalArgumentException("Show or User not found with given IDs!");
+                throw new NotFoundException("Show or User not found with given IDs!");
             }
 
             if (ticketCount <= 0) {
-                throw new IllegalArgumentException("Please enter valid ticket count!");
+                throw new WrongArgumentException("Please enter valid ticket count!");
             }
 
             if (s.getCapacity() < ticketCount) {
-                throw new RuntimeException("Tickets Sold Out!");
+                throw new WrongArgumentException("Tickets Sold Out!");
             }
 
             if (s.getDateTime().getMonth() != LocalDateTime.now().getMonth() ||
                     s.getDateTime().getDayOfMonth() < LocalDateTime.now().getDayOfMonth()) {
-                throw new RuntimeException("Movie show's date has already passed!");
+                throw new WrongArgumentException("Movie show's date has already passed!");
             }
 
             int amount = ticketCount * s.getPrice();
 
             if (u.getWalletBalance() < amount) {
-                throw new RuntimeException("Insufficient Balance!");
+                throw new WrongArgumentException("Insufficient Balance!");
             }
 
             if (u.getAge() < 18 && s.getMovie().isAgeRestricted()) {
-                throw new RuntimeException("You cannot book ticket as this movie is age restricted!");
+                throw new WrongArgumentException("You cannot book ticket as this movie is age restricted!");
             }
 
             Transaction t = new Transaction();
@@ -80,19 +82,15 @@ public class TransactionServiceImplementation implements TransactionService {
             saveTransaction(t);
             return "Your booking for the movie " + s.getMovie().getName() + " at "+s.getTheater().getName()+" is successfully done.";
         }
-        catch (IllegalArgumentException e) {
-            System.err.println("Error: " + e.getMessage());
+        catch (WrongArgumentException e) {
+            throw new WrongArgumentException(e.getMessage());
         }
-        catch (RuntimeException e) {
-            System.err.println("Error: " + e.getMessage());
-
+        catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
         }
         catch (Exception e) {
-            System.err.println("An unexpected error occurred: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("An unexpected error occurred while creating the transaction.");
         }
-        return null;
     }
 
     @Override
@@ -102,39 +100,56 @@ public class TransactionServiceImplementation implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> getPreviousBookings(Long userId){
-        Users u=userService.findUserById(userId);
-        List<Transaction> all=u.getBookings();
-        LocalDateTime now=LocalDateTime.now();
-        List<Transaction> previous=all.stream().filter(x -> (x.getShowDetails().getDateTime().getMonthValue()<now.getMonthValue())
-                || (x.getShowDetails().getDateTime().getMonthValue()==now.getMonthValue() && x.getShowDetails().getDateTime().getDayOfMonth()<now.getDayOfMonth())
-                || (x.getShowDetails().getDateTime().getMonthValue()==now.getMonthValue() && x.getShowDetails().getDateTime().getDayOfMonth()==now.getDayOfMonth()) && x.getShowDetails().getDateTime().getHour()<now.getHour()).toList();
-        return TransactionToResponse.convertList(previous);
-    }
-
-    @Override
-    public List<TransactionResponse> getUpcomingBookings(Long userId){
-        Users u=userService.findUserById(userId);
-        List<Transaction> all=u.getBookings();
-        LocalDateTime now=LocalDateTime.now();
-        List<Transaction> upcoming=all.stream().filter(x -> (x.getShowDetails().getDateTime().getMonthValue()>now.getMonthValue())
-                || (x.getShowDetails().getDateTime().getMonthValue()==now.getMonthValue() && x.getShowDetails().getDateTime().getDayOfMonth()>now.getDayOfMonth())
-                || (x.getShowDetails().getDateTime().getMonthValue()==now.getMonthValue() && x.getShowDetails().getDateTime().getDayOfMonth()==now.getDayOfMonth()) && x.getShowDetails().getDateTime().getHour()>=now.getHour()).toList();
-        return TransactionToResponse.convertList(upcoming);
-    }
-
-    @Override
-    public boolean addMoney(Long userId, Integer amount){
+    public List<TransactionResponse> getPreviousBookings(Long userId) throws NotFoundException{
         try {
-            if(amount<=0){
-                throw new RuntimeException("Please enter valid money amount");
-            }
             Users u=userService.findUserById(userId);
+            if(u==null){
+                throw new NotFoundException("User Not found");
+            }
+            List<Transaction> all=u.getBookings();
+            LocalDateTime now=LocalDateTime.now();
+            List<Transaction> previous=all.stream().filter(x -> (x.getShowDetails().getDateTime().isBefore(LocalDateTime.now()))).toList();
+            return TransactionToResponse.convertList(previous);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<TransactionResponse> getUpcomingBookings(Long userId) throws NotFoundException{
+        try {
+            Users u=userService.findUserById(userId);
+            if(u==null){
+                throw new NotFoundException("User not found");
+            }
+            List<Transaction> all=u.getBookings();
+            LocalDateTime now=LocalDateTime.now();
+            List<Transaction> upcoming=all.stream().filter(x ->(x.getShowDetails().getDateTime().isAfter(LocalDateTime.now()))).toList();
+            return TransactionToResponse.convertList(upcoming);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean addMoney(Long userId, Integer amount) throws NotFoundException,WrongArgumentException{
+        try {
+            Users u=userService.findUserById(userId);
+            if(u==null){
+                throw new NotFoundException("User not found");
+            }
+            if(amount<=0){
+                throw new WrongArgumentException("Please enter valid money amount");
+            }
             u.setWalletBalance(u.getWalletBalance()+amount);
             userService.saveUser(u);
             return true;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+        }
+        catch(NotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        }
+        catch (WrongArgumentException e) {
+            throw new WrongArgumentException(e.getMessage());
         }
     }
 }

@@ -3,6 +3,8 @@ package com.sampleProject.bookMyShowApp.services.Impl;
 import com.sampleProject.bookMyShowApp.entities.Show;
 import com.sampleProject.bookMyShowApp.entities.Theater;
 import com.sampleProject.bookMyShowApp.entities.Transaction;
+import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
+import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.helper.ShowToResponse;
 import com.sampleProject.bookMyShowApp.helper.TheaterToResponse;
 import com.sampleProject.bookMyShowApp.repositories.TheaterRepository;
@@ -41,31 +43,55 @@ public class TheaterServiceImplementation implements TheaterService {
     }
 
     @Override
-    public TheaterResponse createTheater(String name, String city){
-        Theater t=new Theater(city,name);
-        saveTheater(t);
-        return TheaterToResponse.convertEntity(t);
-    }
-
-    @Override
-    public List<ShowResponse> getShowsOfTheater(String theaterName){
-        Theater t=findTheaterByName(theaterName);
-        List<Show> allShows= t.getShows();
-        return ShowToResponse.convertList(allShows);
-    }
-
-    @Override
-    public int getRevenue(Long theaterId){
-        Theater t=findTheaterById(theaterId);
-        List<Show> shows=t.getShows();
-        int revenue=0;
-        for(Show sh: shows){
-            List<Transaction> transactionList=sh.getTransactions();
-            for(Transaction tr: transactionList){
-                revenue+=tr.getTicketCount()*sh.getPrice();
+    public TheaterResponse createTheater(String name, String city) throws WrongArgumentException{
+        try {
+            if(name==null){
+                throw new WrongArgumentException("Name should not be null");
             }
+            if(city==null){
+                throw new WrongArgumentException("City should not be null");
+            }
+            Theater t=new Theater(city,name);
+            saveTheater(t);
+            return TheaterToResponse.convertEntity(t);
+        } catch (WrongArgumentException e) {
+            throw new WrongArgumentException(e.getMessage());
         }
-        return revenue;
+    }
+
+    @Override
+    public List<ShowResponse> getShowsOfTheater(String theaterName) throws NotFoundException{
+        try {
+            Theater t=findTheaterByName(theaterName);
+            if(t==null){
+                throw new NotFoundException("Theater not found");
+            }
+            List<Show> allShows= t.getShows();
+            return ShowToResponse.convertList(allShows);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+    }
+
+    @Override
+    public int getRevenue(Long theaterId) throws NotFoundException{
+        try {
+            Theater t=findTheaterById(theaterId);
+            if(t==null){
+                throw new NotFoundException("Theater not found");
+            }
+            List<Show> shows=t.getShows();
+            int revenue=0;
+            for(Show sh: shows){
+                List<Transaction> transactionList=sh.getTransactions();
+                for(Transaction tr: transactionList){
+                    revenue+=tr.getTicketCount()*sh.getPrice();
+                }
+            }
+            return revenue;
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
     }
 
     @Override

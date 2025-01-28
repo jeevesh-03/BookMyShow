@@ -1,5 +1,7 @@
 package com.sampleProject.bookMyShowApp.controllers;
 
+import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
+import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.response.TheaterResponse;
 import com.sampleProject.bookMyShowApp.services.TheaterService;
@@ -14,23 +16,25 @@ public class TheaterController {
     @Autowired
     private TheaterService theaterService;
 
-    @GetMapping("getAllTheaters")
+    @GetMapping("getAll")
     public List<TheaterResponse> getAll(){
         return theaterService.getAllTheaters();
     }
 
-    @PostMapping("createTheater")
-    public TheaterResponse createTheater(@RequestParam("name") String name, @RequestParam("city") String city){
+    @PostMapping("create")
+    public TheaterResponse createTheater(@RequestParam("name") String name,
+                                         @RequestParam("city") String city)
+            throws WrongArgumentException {
         return theaterService.createTheater(name,city);
     }
 
     @GetMapping("/shows")
-    public List<ShowResponse> getShows(@RequestParam("theaterName") String theaterName){
+    public List<ShowResponse> getShows(@RequestParam("theaterName") String theaterName) throws NotFoundException {
         return theaterService.getShowsOfTheater(theaterName);
     }
 
     @GetMapping("/revenue")
-    public int getRevenueOfTheater(@RequestParam("theaterId") Long theaterId){
+    public int getRevenueOfTheater(@RequestParam("theaterId") Long theaterId) throws NotFoundException{
         return theaterService.getRevenue(theaterId);
     }
 

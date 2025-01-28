@@ -3,6 +3,8 @@ package com.sampleProject.bookMyShowApp.services.Impl;
 import com.sampleProject.bookMyShowApp.entities.Movie;
 import com.sampleProject.bookMyShowApp.entities.Show;
 import com.sampleProject.bookMyShowApp.entities.Transaction;
+import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
+import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.helper.MovieToResponse;
 import com.sampleProject.bookMyShowApp.helper.ShowToResponse;
 import com.sampleProject.bookMyShowApp.repositories.MovieRepository;
@@ -24,10 +26,17 @@ public class MovieServiceImplementation implements MovieService {
     private ShowDetailsRepository showDetailsRepository;
 
     @Override
-    public MovieResponse saveMovie(String name, boolean ageRestricted){
-        Movie m=new Movie(name,ageRestricted);
-        movieRepository.save(m);
-        return MovieToResponse.convertEntity(m);
+    public MovieResponse saveMovie(String name, boolean ageRestricted) throws WrongArgumentException{
+        try {
+            if(name==null){
+                throw new WrongArgumentException("Movie name is empty!");
+            }
+            Movie m=new Movie(name,ageRestricted);
+            movieRepository.save(m);
+            return MovieToResponse.convertEntity(m);
+        } catch (WrongArgumentException e) {
+            throw new WrongArgumentException(e.getMessage());
+        }
     }
 
     @Override
@@ -46,38 +55,68 @@ public class MovieServiceImplementation implements MovieService {
     }
 
     @Override
-    public List<ShowResponse> findShowsByMovie(String movieName) {
-        List<Show> shows= showDetailsRepository.findShowsByMovie(movieName);
-        return ShowToResponse.convertList(shows);
-    }
-
-    @Override
-    public int getRevenueOfMovie(String movieName){
-        Movie m=findMovieByName(movieName);
-        List<Show> shows=m.getShows();
-        int revenue=0;
-        for(Show sh: shows){
-            List<Transaction> allTransactions=sh.getTransactions();
-            for(Transaction transaction: allTransactions){
-                revenue+=transaction.getTicketCount()*sh.getPrice();
+    public List<ShowResponse> findShowsByMovie(String movieName) throws NotFoundException{
+        try {
+            if(movieRepository.findMovieByName(movieName)==null){
+                throw new NotFoundException("Movie not found");
             }
+            List<Show> shows= showDetailsRepository.findShowsByMovie(movieName);
+            return ShowToResponse.convertList(shows);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
         }
-        return revenue;
     }
 
     @Override
-    public MovieResponse getMovie(String name, Long id){
-        if(name==null && id==null) return null;
-        if(name==null){
-            Movie m=movieRepository.findMovieById(id);
-            return MovieToResponse.convertEntity(m);
+    public int getRevenueOfMovie(String movieName) throws NotFoundException{
+        try {
+            if(movieRepository.findMovieByName(movieName)==null){
+                throw new NotFoundException("Movie not found");
+            }
+            Movie m=findMovieByName(movieName);
+            List<Show> shows=m.getShows();
+            int revenue=0;
+            for(Show sh: shows){
+                List<Transaction> allTransactions=sh.getTransactions();
+                for(Transaction transaction: allTransactions){
+                    revenue+=transaction.getTicketCount()*sh.getPrice();
+                }
+            }
+            return revenue;
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
         }
-        if(id==null){
-            Movie m=movieRepository.findMovieByName(name);
-            return MovieToResponse.convertEntity(m);
+    }
+
+    @Override
+    public MovieResponse getMovie(String name, Long id) throws WrongArgumentException,NotFoundException{
+        try {
+            if(name==null && id==null){
+                throw new WrongArgumentException("Name and Id provided is null");
+            }
+            if(name==null){
+                Movie m=movieRepository.findMovieById(id);
+                if(m==null){
+                    throw new NotFoundException("No movie exists with given id");
+                }
+                return MovieToResponse.convertEntity(m);
+            }
+            if(id==null){
+                Movie m=movieRepository.findMovieByName(name);
+                if(m==null){
+                    throw new NotFoundException("No movie exists with given name");
+                }
+                return MovieToResponse.convertEntity(m);
+            }
+            if(movieRepository.findMovieById(id)!=movieRepository.findMovieByName(name)){
+                throw new NotFoundException("No movie exists with given name and id");
+            }
+            return MovieToResponse.convertEntity(movieRepository.findMovieByName(name));
+        } catch (WrongArgumentException e) {
+            throw new WrongArgumentException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
         }
-        if(movieRepository.findMovieById(id)!=movieRepository.findMovieByName(name)) return null;
-        return MovieToResponse.convertEntity(movieRepository.findMovieByName(name));
     }
 
 }

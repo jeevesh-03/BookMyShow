@@ -1,9 +1,9 @@
 package com.sampleProject.bookMyShowApp.services.Impl;
 
-import com.sampleProject.bookMyShowApp.entities.Movie;
-import com.sampleProject.bookMyShowApp.entities.Show;
+
 import com.sampleProject.bookMyShowApp.entities.Users;
-import com.sampleProject.bookMyShowApp.helper.MovieToResponse;
+import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
+import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.helper.ShowToResponse;
 import com.sampleProject.bookMyShowApp.helper.UserToResponse;
 import com.sampleProject.bookMyShowApp.repositories.UserRepository;
@@ -45,42 +45,81 @@ public class UserServiceImplementation implements UserService {
         return userRepository.findUserById(id);
     }
 
-    public Long viewBalance(Long userId){
-        Users u=findUserById(userId);
-        return u.getWalletBalance();
+    public Long viewBalance(Long userId) throws NotFoundException{
+        try {
+            Users u=findUserById(userId);
+            if(u==null){
+                throw new NotFoundException("User not found");
+            }
+            return u.getWalletBalance();
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
     }
 
-    public UserResponse createUser(String name, Integer age, String city, Long walletBalance){
-        Users u=new Users(name,age,city,walletBalance);
-        saveUser(u);
-        return UserToResponse.convertEntity(u);
-    }
-
-    public UserResponse getUser(String name, Long id) throws RuntimeException{
-        if(name==null && id==null) return null;
-        if(name==null){
-            Users u=userRepository.findUserById(id);
+    public UserResponse createUser(String name, Integer age, String city, Long walletBalance) throws WrongArgumentException {
+        try {
+            if(name==null || age<0 || city==null || walletBalance<0){
+                throw new WrongArgumentException("Wrong input!");
+            }
+            Users u=new Users(name,age,city,walletBalance);
+            saveUser(u);
             return UserToResponse.convertEntity(u);
         }
-        if(id==null){
-            Users u=userRepository.findUserByName(name);
-            return UserToResponse.convertEntity(u);
+        catch (WrongArgumentException e) {
+            throw new WrongArgumentException(e.getMessage());
         }
-        if(userRepository.findUserById(id)!=userRepository.findUserByName(name)) return null;
-        return UserToResponse.convertEntity(userRepository.findUserById(id));
     }
 
-    public List<ShowResponse> getShows(Long userId){
-        Users u=findUserById(userId);
-        String city=u.getCity();
-        return ShowToResponse.convertList(showDetailsService.findShowsByCity(city));
+    public UserResponse getUser(String name, Long id) throws NotFoundException{
+        try {
+            if(name==null && id==null){
+                throw new NotFoundException("Empty name and id");
+            }
+            if(name==null){
+                Users u=userRepository.findUserById(id);
+                if(u==null){
+                    throw new NotFoundException("No user exists with given id");
+                }
+                return UserToResponse.convertEntity(u);
+            }
+            if(id==null){
+                Users u=userRepository.findUserByName(name);
+                if(u==null){
+                    throw new NotFoundException("No user exists with given name");
+                }
+                return UserToResponse.convertEntity(u);
+            }
+            if(userRepository.findUserById(id)!=userRepository.findUserByName(name)){
+                throw new NotFoundException("No user exists with given name and id");
+            }
+            return UserToResponse.convertEntity(userRepository.findUserById(id));
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
     }
 
-    public UserResponse updateUser(Long id, Integer age, String city, String name) throws RuntimeException{
+    public List<ShowResponse> getShows(Long userId) throws NotFoundException{
+        try {
+            Users u=findUserById(userId);
+            if(u==null){
+                throw new NotFoundException("User does not exist with given id!");
+            }
+            String city=u.getCity();
+            return ShowToResponse.convertList(showDetailsService.findShowsByCity(city));
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+    }
+
+    public UserResponse updateUser(Long id, Integer age, String city, String name) throws NotFoundException,WrongArgumentException{
         try {
             Users u=userRepository.findUserById(id);
             if(u==null){
-                throw new RuntimeException("No user exists with id "+id.toString());
+                throw new NotFoundException("No user exists with given id");
+            }
+            if(age<0 || city==null || name==null){
+                throw new WrongArgumentException("Wrong input!");
             }
             u.setAge(age);
             u.setCity(city);
@@ -88,9 +127,11 @@ public class UserServiceImplementation implements UserService {
             userRepository.save(u);
             return UserToResponse.convertEntity(u);
         }
-        catch (RuntimeException e) {
-            System.out.println(e);
+        catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
         }
-        return null;
+        catch(WrongArgumentException e){
+            throw new WrongArgumentException(e.getMessage());
+        }
     }
 }

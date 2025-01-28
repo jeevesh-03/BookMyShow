@@ -1,6 +1,8 @@
 package com.sampleProject.bookMyShowApp.services;
 
 import com.sampleProject.bookMyShowApp.entities.Users;
+import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
+import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.response.UserResponse;
 import org.springframework.stereotype.Service;
@@ -18,13 +20,13 @@ public interface UserService {
 
     Users findUserById(Long id);
 
-    Long viewBalance(Long userId);
+    Long viewBalance(Long userId) throws NotFoundException;
 
-    UserResponse createUser(String name, Integer age, String city, Long walletBalance);
+    UserResponse createUser(String name, Integer age, String city, Long walletBalance) throws WrongArgumentException;
 
-    UserResponse getUser(String name, Long id) throws RuntimeException;
+    UserResponse getUser(String name, Long id) throws NotFoundException;
 
-    List<ShowResponse> getShows(Long userId);
+    List<ShowResponse> getShows(Long userId) throws NotFoundException;
 
-    UserResponse updateUser(Long id, Integer age, String city, String name);
+    UserResponse updateUser(Long id, Integer age, String city, String name) throws NotFoundException,WrongArgumentException;
 }
