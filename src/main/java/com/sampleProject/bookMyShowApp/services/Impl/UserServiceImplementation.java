@@ -59,6 +59,9 @@ public class UserServiceImplementation implements UserService {
 
     public UserResponse createUser(String name, Integer age, String city, Long walletBalance) throws WrongArgumentException {
         try {
+            if(walletBalance==null){
+                walletBalance=1000L;
+            }
             if(name==null || age<0 || city==null || walletBalance<0){
                 throw new WrongArgumentException("Wrong input!");
             }

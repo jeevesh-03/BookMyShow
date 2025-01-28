@@ -1,10 +1,8 @@
 package com.sampleProject.bookMyShowApp.controllers;
 
-import com.sampleProject.bookMyShowApp.entities.Transaction;
 import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
 import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.response.TransactionResponse;
-import com.sampleProject.bookMyShowApp.services.ShowDetailsService;
 import com.sampleProject.bookMyShowApp.services.TransactionService;
 import com.sampleProject.bookMyShowApp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

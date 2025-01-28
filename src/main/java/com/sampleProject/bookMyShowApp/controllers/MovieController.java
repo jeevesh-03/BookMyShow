@@ -34,7 +34,6 @@ public class MovieController {
         return movieService.getMovie(name,id);
     }
 
-
     @GetMapping("shows")
     public List<ShowResponse> getShowsByMovie(@RequestParam("movieName") String movieName)
             throws NotFoundException{
