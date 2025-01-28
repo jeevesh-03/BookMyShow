@@ -7,6 +7,8 @@ import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 
 @RestController
@@ -16,32 +18,32 @@ public class MovieController {
     private MovieService movieService;
 
     @GetMapping("getAll")
-    public List<MovieResponse> getAll(){
+    public Mono<List<MovieResponse>> getAll(){
         return movieService.getAllMovies();
     }
 
     @PostMapping("create")
-    public MovieResponse createMovie(@RequestParam("name") String name,
+    public Mono<MovieResponse> createMovie(@RequestParam("name") String name,
                                      @RequestParam("ageRestricted") boolean ageRestricted)
             throws WrongArgumentException {
         return movieService.saveMovie(name, ageRestricted);
     }
 
     @GetMapping("getByIdOrName")
-    public MovieResponse getMovie(@RequestParam(value="name", required = false) String name,
+    public Mono<MovieResponse> getMovie(@RequestParam(value="name", required = false) String name,
                                   @RequestParam(value="id", required=false) Long id)
             throws WrongArgumentException, NotFoundException {
         return movieService.getMovie(name,id);
     }
 
     @GetMapping("shows")
-    public List<ShowResponse> getShowsByMovie(@RequestParam("movieName") String movieName)
+    public Mono<List<ShowResponse>> getShowsByMovie(@RequestParam("movieName") String movieName)
             throws NotFoundException{
         return movieService.findShowsByMovie(movieName);
     }
 
     @GetMapping("revenue")
-    public int getRevenueOfMovie(@RequestParam("movieName") String movieName)
+    public Mono<Integer> getRevenueOfMovie(@RequestParam("movieName") String movieName)
             throws NotFoundException{
         return movieService.getRevenueOfMovie(movieName);
     }

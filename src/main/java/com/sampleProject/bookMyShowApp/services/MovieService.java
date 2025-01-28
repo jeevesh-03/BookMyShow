@@ -8,24 +8,27 @@ import com.sampleProject.bookMyShowApp.response.MovieResponse;
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 
 public interface MovieService {
 
-    MovieResponse saveMovie(String name, boolean ageRestricted) throws WrongArgumentException;
+    Mono<MovieResponse> saveMovie(String name, boolean ageRestricted) throws WrongArgumentException;
 
-    List<MovieResponse> getAllMovies();
+    Mono<List<MovieResponse>> getAllMovies();
 
     Movie findMovieByName(String name);
 
     Movie findMovieById(Long id);
 
-    List<ShowResponse> findShowsByMovie(String movieName) throws NotFoundException;
+    Mono<List<ShowResponse>> findShowsByMovie(String movieName) throws NotFoundException;
 
-    int getRevenueOfMovie(String movieName) throws NotFoundException;
+    Mono<Integer> getRevenueOfMovie(String movieName) throws NotFoundException;
 
-    MovieResponse getMovie(String name, Long id) throws WrongArgumentException, NotFoundException;
+    Mono<MovieResponse> getMovie(String name, Long id) throws WrongArgumentException, NotFoundException;
 }
+
 
