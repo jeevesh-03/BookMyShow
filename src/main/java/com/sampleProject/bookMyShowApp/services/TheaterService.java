@@ -22,7 +22,7 @@ public interface TheaterService {
 
     TheaterResponse createTheater(String name, String city) throws WrongArgumentException;
 
-    List<ShowResponse> getShowsOfTheater(String theaterName) throws NotFoundException;
+    List<ShowResponse> getShowsOfTheater(Long theaterId) throws NotFoundException;
 
     int getRevenue(Long theaterId) throws NotFoundException;
 

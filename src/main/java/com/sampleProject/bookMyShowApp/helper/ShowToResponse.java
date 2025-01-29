@@ -10,11 +10,11 @@ public class ShowToResponse {
     public static List<ShowResponse> convertList(List<Show> allShows){
         List<ShowResponse> allShowResponses=new ArrayList<>();
         for(Show s: allShows){
-            allShowResponses.add(new ShowResponse(s.getMovie().getName(),s.getTheater().getName(),s.getDateTime()));
+            allShowResponses.add(new ShowResponse(s.getMovie().getName(),s.getTheater().getName(),s.getDateTime(),s.getTheater().getCity(),s.getShowId(),s.getCapacity()));
         }
         return allShowResponses;
     }
     public static ShowResponse convertEntity(Show s){
-        return new ShowResponse(s.getMovie().getName(),s.getTheater().getName(),s.getDateTime());
+        return new ShowResponse(s.getMovie().getName(),s.getTheater().getName(),s.getDateTime(),s.getTheater().getCity(),s.getShowId(),s.getCapacity());
     }
 }

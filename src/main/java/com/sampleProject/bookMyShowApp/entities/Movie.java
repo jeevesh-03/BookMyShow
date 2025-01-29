@@ -14,8 +14,8 @@ public class Movie {
     private String name;
     private boolean ageRestricted;
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
-    @JsonManagedReference("show-movie")
-    @JsonIgnore
+//    @JsonManagedReference("show-movie")
+//    @JsonIgnore
     private List<Show> shows;
 
     public Movie(String name, boolean ageRestricted) {

@@ -26,4 +26,6 @@ public interface TransactionService {
     List<TransactionResponse> getUpcomingBookings(Long userId) throws NotFoundException;
 
     boolean addMoney(Long userId, Integer amount) throws NotFoundException,WrongArgumentException;
+
+    void cancelBooking(Long userId, Long showId);
 }

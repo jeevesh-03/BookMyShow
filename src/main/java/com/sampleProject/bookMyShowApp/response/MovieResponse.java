@@ -15,5 +15,29 @@ public class MovieResponse {
         this.movieName = movieName;
     }
 
+    public MovieResponse(String movieName, Long id, boolean ageRestricted) {
+        this.movieName = movieName;
+        this.id = id;
+        this.ageRestricted = ageRestricted;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public boolean isAgeRestricted() {
+        return ageRestricted;
+    }
+
+    public void setAgeRestricted(boolean ageRestricted) {
+        this.ageRestricted = ageRestricted;
+    }
+
     String movieName;
+    Long id;
+    boolean ageRestricted;
 }

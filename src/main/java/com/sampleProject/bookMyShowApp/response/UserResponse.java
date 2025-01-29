@@ -1,6 +1,16 @@
 package com.sampleProject.bookMyShowApp.response;
 
 public class UserResponse {
+    Long id;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     String name;
     Integer age;
     String city;
@@ -29,9 +39,10 @@ public class UserResponse {
         this.city = city;
     }
 
-    public UserResponse(String name, Integer age, String city) {
+    public UserResponse(String name, Integer age, String city, Long id) {
         this.name = name;
         this.age = age;
         this.city = city;
+        this.id=id;
     }
 }

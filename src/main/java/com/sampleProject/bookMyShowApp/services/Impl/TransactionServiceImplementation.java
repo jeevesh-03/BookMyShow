@@ -74,6 +74,18 @@ public class TransactionServiceImplementation implements TransactionService {
                 throw new WrongArgumentException("You cannot book ticket as this movie is age restricted!");
             }
 
+            List<Transaction> allTransactions=u.getBookings();
+            boolean found=false;
+            for(Transaction t:allTransactions){
+                if(t.getShowDetails().getShowId().equals(s.getShowId()) && s.getDateTime().isAfter(LocalDateTime.now())){
+                    found=true;
+                    break;
+                }
+            }
+            if(found) {
+                throw new WrongArgumentException("Booking found for given user and show");
+            }
+
             Transaction t = new Transaction();
             t.setShowDetails(s);
             t.setUser(u);
@@ -113,6 +125,9 @@ public class TransactionServiceImplementation implements TransactionService {
         } catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
         }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
+        }
     }
 
     @Override
@@ -128,6 +143,9 @@ public class TransactionServiceImplementation implements TransactionService {
             return TransactionToResponse.convertList(upcoming);
         } catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
@@ -150,6 +168,50 @@ public class TransactionServiceImplementation implements TransactionService {
         }
         catch (WrongArgumentException e) {
             throw new WrongArgumentException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
+        }
+    }
+    @Transactional
+    public void deleteTransaction(Users u, Show s, Transaction t){
+        u.getBookings().remove(t);
+        s.getTransactions().remove(t);
+        u.setWalletBalance(u.getWalletBalance()+((long) t.getTicketCount() *t.getShowDetails().getPrice()));
+        s.setCapacity(s.getCapacity()+t.getTicketCount());
+        userService.saveUser(u);
+        showDetailsService.saveShowDetails(s);
+        transactionRepository.delete(t);
+    }
+    public void cancelBooking(Long userId, Long showId) throws NotFoundException{
+        try {
+            Users u=userService.findUserById(userId);
+            Show s=showDetailsService.findShowById(showId);
+
+            if(u==null){
+                throw new NotFoundException("User not found");
+            }
+            if(s==null){
+                throw new NotFoundException("Show not found");
+            }
+            List<Transaction> allTransactions=u.getBookings();
+            boolean found=false;
+            for(Transaction t:allTransactions){
+                if(t.getShowDetails().getShowId().equals(s.getShowId()) && s.getDateTime().isAfter(LocalDateTime.now())){
+                    found=true;
+                    deleteTransaction(u,s,t);
+                    break;
+                }
+            }
+            if(!found) {
+                throw new NotFoundException("No upcoming booking found with given user and show");
+            }
+        }
+        catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+        catch(Exception e){
+            throw new RuntimeException("Unexpected error");
         }
     }
 }

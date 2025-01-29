@@ -18,8 +18,8 @@ public class Users {
     private Long walletBalance;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    @JsonManagedReference("abc")
-    @JsonIgnore
+//    @JsonManagedReference("abc")
+//    @JsonIgnore
     private List<Transaction> bookings;
 
     public Users(){

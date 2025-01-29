@@ -24,8 +24,8 @@ public class Show {
     @JoinColumn(name="movie_id")
     private Movie movie;
     @OneToMany(mappedBy = "show", cascade = CascadeType.ALL)
-    @JsonManagedReference("def")
-    @JsonIgnore
+//    @JsonManagedReference("def")
+//    @JsonIgnore
     private List<Transaction> transactions;
 
     public Show(){

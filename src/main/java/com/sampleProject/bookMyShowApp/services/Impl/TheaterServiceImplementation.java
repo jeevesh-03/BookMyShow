@@ -57,12 +57,15 @@ public class TheaterServiceImplementation implements TheaterService {
         } catch (WrongArgumentException e) {
             throw new WrongArgumentException(e.getMessage());
         }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while creating the transaction.");
+        }
     }
 
     @Override
-    public List<ShowResponse> getShowsOfTheater(String theaterName) throws NotFoundException{
+    public List<ShowResponse> getShowsOfTheater(Long theaterId) throws NotFoundException{
         try {
-            Theater t=findTheaterByName(theaterName);
+            Theater t=findTheaterById(theaterId);
             if(t==null){
                 throw new NotFoundException("Theater not found");
             }
@@ -70,6 +73,9 @@ public class TheaterServiceImplementation implements TheaterService {
             return ShowToResponse.convertList(allShows);
         } catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
@@ -91,6 +97,9 @@ public class TheaterServiceImplementation implements TheaterService {
             return revenue;
         } catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 

@@ -29,8 +29,8 @@ public class TheaterController {
     }
 
     @GetMapping("/shows")
-    public List<ShowResponse> getShows(@RequestParam("theaterName") String theaterName) throws NotFoundException {
-        return theaterService.getShowsOfTheater(theaterName);
+    public List<ShowResponse> getShows(@RequestParam("theaterId") Long theaterId) throws NotFoundException {
+        return theaterService.getShowsOfTheater(theaterId);
     }
 
     @GetMapping("/revenue")

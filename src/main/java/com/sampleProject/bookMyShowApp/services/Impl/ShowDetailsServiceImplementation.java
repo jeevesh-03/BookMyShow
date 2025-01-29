@@ -92,10 +92,15 @@ public class ShowDetailsServiceImplementation implements ShowDetailsService {
             theaterRepository.save(t);
 
             return ShowToResponse.convertEntity(s);
-        } catch (WrongArgumentException e) {
+        }
+        catch (WrongArgumentException e) {
             throw new WrongArgumentException(e.getMessage());
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
@@ -112,8 +117,12 @@ public class ShowDetailsServiceImplementation implements ShowDetailsService {
                 revenue+=t.getTicketCount()*s.getPrice();
             }
             return revenue;
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 }

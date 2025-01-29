@@ -6,6 +6,8 @@ import com.sampleProject.bookMyShowApp.response.TransactionResponse;
 import com.sampleProject.bookMyShowApp.services.TransactionService;
 import com.sampleProject.bookMyShowApp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,5 +56,12 @@ public class TransactionController {
     public List<TransactionResponse> viewUpcomingBookings(@RequestParam("userId") Long userId)
             throws NotFoundException{
         return transactionService.getUpcomingBookings(userId);
+    }
+
+    @DeleteMapping("/cancel")
+    public ResponseEntity<String> cancelBooking(@RequestParam("userId") Long userId,
+                                                @RequestParam("showId") Long showId){
+        transactionService.cancelBooking(userId,showId);
+        return new ResponseEntity<>("Your booking has been cancelled", HttpStatus.OK);
     }
 }

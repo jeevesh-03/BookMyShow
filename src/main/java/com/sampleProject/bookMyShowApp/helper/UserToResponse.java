@@ -10,12 +10,12 @@ public class UserToResponse {
     public static List<UserResponse> convertList(List<Users> users){
         List<UserResponse> allUserResponses=new ArrayList<>();
         for(Users u:users){
-            allUserResponses.add(new UserResponse(u.getName(),u.getAge(),u.getCity()));
+            allUserResponses.add(new UserResponse(u.getName(),u.getAge(),u.getCity(),u.getUserId()));
         }
         return allUserResponses;
     }
 
     public static UserResponse convertEntity(Users users){
-        return new UserResponse(users.getName(),users.getAge(),users.getCity());
+        return new UserResponse(users.getName(),users.getAge(),users.getCity(), users.getUserId());
     }
 }

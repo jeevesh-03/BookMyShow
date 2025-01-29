@@ -10,13 +10,13 @@ public class MovieToResponse {
     public static List<MovieResponse> convertList(List<Movie> all){
         List<MovieResponse> allMovies=new ArrayList<>();
         for(Movie m:all){
-            MovieResponse mr=new MovieResponse(m.getName());
+            MovieResponse mr=new MovieResponse(m.getName(),m.getMovieId(),m.isAgeRestricted());
             allMovies.add(mr);
         }
         return allMovies;
     }
 
     public static MovieResponse convertEntity(Movie m){
-        return new MovieResponse(m.getName());
+        return new MovieResponse(m.getName(),m.getMovieId(),m.isAgeRestricted());
     }
 }

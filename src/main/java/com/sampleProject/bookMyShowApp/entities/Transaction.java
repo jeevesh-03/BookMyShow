@@ -13,13 +13,13 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "users_id")
-    @JsonBackReference("abc")
+//    @JoinColumn(name = "users_id")
+//    @JsonBackReference("abc")
     private Users users;
 
     @ManyToOne
-    @JoinColumn(name = "show_id")
-    @JsonBackReference("def")
+//    @JoinColumn(name = "show_id")
+//    @JsonBackReference("def")
     private Show show;
     private LocalDateTime bookingDate;
     private Integer ticketCount;

@@ -35,8 +35,12 @@ public class MovieServiceImplementation implements MovieService {
             Movie m=new Movie(name,ageRestricted);
             movieRepository.save(m);
             return Mono.just(MovieToResponse.convertEntity(m));
-        } catch (WrongArgumentException e) {
+        }
+        catch (WrongArgumentException e) {
             return Mono.error(e);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
@@ -63,8 +67,12 @@ public class MovieServiceImplementation implements MovieService {
             }
             List<Show> shows= showDetailsRepository.findShowsByMovie(movieName);
             return Mono.just(ShowToResponse.convertList(shows));
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             return Mono.error(e);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
@@ -84,8 +92,12 @@ public class MovieServiceImplementation implements MovieService {
                 }
             }
             return Mono.just(revenue);
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             return Mono.error(e);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
@@ -119,6 +131,9 @@ public class MovieServiceImplementation implements MovieService {
         }
         catch (WrongArgumentException e) {
             return Mono.error(e);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred.");
         }
     }
 

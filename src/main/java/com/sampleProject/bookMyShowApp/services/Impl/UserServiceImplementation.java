@@ -52,15 +52,19 @@ public class UserServiceImplementation implements UserService {
                 throw new NotFoundException("User not found");
             }
             return u.getWalletBalance();
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while creating the transaction.");
         }
     }
 
     public UserResponse createUser(String name, Integer age, String city, Long walletBalance) throws WrongArgumentException {
         try {
             if(walletBalance==null){
-                walletBalance=1000L;
+                walletBalance=0L;
             }
             if(name==null || age<0 || city==null || walletBalance<0){
                 throw new WrongArgumentException("Wrong input!");
@@ -71,6 +75,9 @@ public class UserServiceImplementation implements UserService {
         }
         catch (WrongArgumentException e) {
             throw new WrongArgumentException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while creating the transaction.");
         }
     }
 
@@ -97,8 +104,12 @@ public class UserServiceImplementation implements UserService {
                 throw new NotFoundException("No user exists with given name and id");
             }
             return UserToResponse.convertEntity(userRepository.findUserById(id));
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while creating the transaction.");
         }
     }
 
@@ -110,8 +121,12 @@ public class UserServiceImplementation implements UserService {
             }
             String city=u.getCity();
             return ShowToResponse.convertList(showDetailsService.findShowsByCity(city));
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             throw new NotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while creating the transaction.");
         }
     }
 
@@ -135,6 +150,9 @@ public class UserServiceImplementation implements UserService {
         }
         catch(WrongArgumentException e){
             throw new WrongArgumentException(e.getMessage());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while creating the transaction.");
         }
     }
 }

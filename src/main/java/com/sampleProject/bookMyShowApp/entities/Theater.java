@@ -15,8 +15,8 @@ public class Theater {
     private String name;
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL)
-    @JsonManagedReference("show-theater")
-    @JsonIgnore
+//    @JsonManagedReference("show-theater")
+//    @JsonIgnore
     private List<Show> shows;
 
     public Theater(String city, String name) {
