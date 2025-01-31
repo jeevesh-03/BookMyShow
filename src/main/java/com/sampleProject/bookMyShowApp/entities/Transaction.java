@@ -1,11 +1,8 @@
 package com.sampleProject.bookMyShowApp.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 public class Transaction {
@@ -24,7 +21,7 @@ public class Transaction {
     private LocalDateTime bookingDate;
     private Integer ticketCount;
 
-    public Transaction(){
+    public Transaction() {
 
     }
 

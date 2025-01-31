@@ -12,13 +12,13 @@ public class TransactionToResponse {
 
         for(Transaction t:allTransactions){
             int amount=t.getTicketCount()*t.getShowDetails().getPrice();
-            allTransactionResponses.add(new TransactionResponse(t.getUser().getName(),t.getShowDetails().getMovie().getName(),t.getShowDetails().getTheater().getName(),t.getShowDetails().getTheater().getCity(),t.getShowDetails().getDateTime(),t.getTicketCount(),amount));
+            allTransactionResponses.add(new TransactionResponse(t.getUser().getName(),t.getShowDetails().getMovie().getName(),t.getShowDetails().getTheater().getName(),t.getShowDetails().getTheater().getCity(),t.getShowDetails().getDateTime(),t.getTicketCount(),amount,t.getTransactionId()));
         }
         return allTransactionResponses;
     }
 
     public static TransactionResponse convertEntity(Transaction t){
         int amount=t.getTicketCount()*t.getShowDetails().getPrice();
-        return new TransactionResponse(t.getUser().getName(),t.getShowDetails().getMovie().getName(),t.getShowDetails().getTheater().getName(),t.getShowDetails().getMovie().getName(),t.getShowDetails().getDateTime(),t.getTicketCount(),amount);
+        return new TransactionResponse(t.getUser().getName(),t.getShowDetails().getMovie().getName(),t.getShowDetails().getTheater().getName(),t.getShowDetails().getTheater().getCity(),t.getShowDetails().getDateTime(),t.getTicketCount(),amount,t.getTransactionId());
     }
 }

@@ -1,7 +1,5 @@
 package com.sampleProject.bookMyShowApp.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public class Movie {
         this.ageRestricted = ageRestricted;
     }
 
-    public Movie(){
+    public Movie() {
 
     }
 

@@ -11,15 +11,16 @@ import com.sampleProject.bookMyShowApp.repositories.TheaterRepository;
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.response.TheaterResponse;
 import com.sampleProject.bookMyShowApp.services.TheaterService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TheaterServiceImplementation implements TheaterService {
-    @Autowired
-    private TheaterRepository theaterRepository;
+    private final TheaterRepository theaterRepository;
 
     @Override
     public void saveTheater(Theater t){

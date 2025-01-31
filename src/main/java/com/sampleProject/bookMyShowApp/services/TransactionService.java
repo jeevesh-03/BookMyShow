@@ -17,7 +17,7 @@ public interface TransactionService {
     @Transactional
     void saveTransaction(Transaction t);
 
-    String createTransaction(Long userId, Long showId, Integer ticketCount) throws WrongArgumentException, NotFoundException;
+    TransactionResponse createTransaction(Long userId, Long showId, Integer ticketCount) throws WrongArgumentException, NotFoundException;
 
     List<TransactionResponse> getAllTransactions();
 

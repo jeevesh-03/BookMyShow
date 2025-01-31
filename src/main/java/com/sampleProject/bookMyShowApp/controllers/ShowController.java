@@ -5,7 +5,7 @@ import com.sampleProject.bookMyShowApp.exceptions.NotFoundException;
 import com.sampleProject.bookMyShowApp.exceptions.WrongArgumentException;
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.services.ShowDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/show")
+@AllArgsConstructor
 public class ShowController {
-    @Autowired
-    private ShowDetailsService showDetailsService;
+
+    private final ShowDetailsService showDetailsService;
 
     @GetMapping("getAll")
     public List<ShowResponse> getAllShows() {
@@ -32,12 +33,12 @@ public class ShowController {
                                    @RequestParam(value = "dateTime", required = false) LocalDateTime dateTime)
             throws WrongArgumentException, NotFoundException {
 
-        return showDetailsService.createShow(movieId,theaterId,price,capacity,dateTime);
+        return showDetailsService.createShow(movieId, theaterId, price, capacity, dateTime);
     }
 
     @GetMapping("revenue")
     public int getShowRevenue(@RequestParam("showId") Long showId)
-            throws NotFoundException{
+            throws NotFoundException {
         return showDetailsService.getRevenue(showId);
     }
 }

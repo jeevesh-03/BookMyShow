@@ -1,8 +1,5 @@
 package com.sampleProject.bookMyShowApp.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -22,7 +19,7 @@ public class Users {
 //    @JsonIgnore
     private List<Transaction> bookings;
 
-    public Users(){
+    public Users() {
 
     }
 

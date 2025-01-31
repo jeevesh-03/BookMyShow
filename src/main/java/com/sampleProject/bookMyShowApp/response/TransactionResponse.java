@@ -11,6 +11,15 @@ public class TransactionResponse {
     LocalDateTime showDate;
     Integer ticketCount;
     Integer totalAmount;
+    Long id;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUserName() {
         return userName;
@@ -68,7 +77,7 @@ public class TransactionResponse {
         this.totalAmount = totalAmount;
     }
 
-    public TransactionResponse(String userName, String movieName, String theaterName, String city, LocalDateTime showDate, Integer ticketCount, Integer totalAmount) {
+    public TransactionResponse(String userName, String movieName, String theaterName, String city, LocalDateTime showDate, Integer ticketCount, Integer totalAmount, Long id) {
         this.userName = userName;
         this.movieName = movieName;
         this.theaterName = theaterName;
@@ -76,5 +85,6 @@ public class TransactionResponse {
         this.showDate = showDate;
         this.ticketCount = ticketCount;
         this.totalAmount = totalAmount;
+        this.id=id;
     }
 }

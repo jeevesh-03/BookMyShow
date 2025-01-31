@@ -11,7 +11,7 @@ import com.sampleProject.bookMyShowApp.response.TransactionResponse;
 import com.sampleProject.bookMyShowApp.services.ShowDetailsService;
 import com.sampleProject.bookMyShowApp.services.TransactionService;
 import com.sampleProject.bookMyShowApp.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +19,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TransactionServiceImplementation implements TransactionService {
-    @Autowired
-    private TransactionRepository transactionRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ShowDetailsService showDetailsService;
+    private final TransactionRepository transactionRepository;
+    private final UserService userService;
+    private final ShowDetailsService showDetailsService;
 
     @Transactional
     @Override
@@ -34,7 +32,7 @@ public class TransactionServiceImplementation implements TransactionService {
         Show s=t.getShowDetails();
         u.getBookings().add(t);
         s.getTransactions().add(t);
-        u.setWalletBalance(u.getWalletBalance()-(s.getPrice()*t.getTicketCount()));
+        u.setWalletBalance(u.getWalletBalance()-((long) s.getPrice() *t.getTicketCount()));
         s.setCapacity(s.getCapacity()-t.getTicketCount());
         transactionRepository.save(t);
         userService.saveUser(u);
@@ -42,7 +40,7 @@ public class TransactionServiceImplementation implements TransactionService {
     }
 
     @Override
-    public String createTransaction(Long userId, Long showId, Integer ticketCount) throws WrongArgumentException, NotFoundException{
+    public TransactionResponse createTransaction(Long userId, Long showId, Integer ticketCount) throws WrongArgumentException, NotFoundException{
         try {
             Users u = userService.findUserById(userId);
             Show s = showDetailsService.findShowById(showId);
@@ -92,7 +90,7 @@ public class TransactionServiceImplementation implements TransactionService {
             t.setTicketCount(ticketCount);
             t.setBookingDate(LocalDateTime.now());
             saveTransaction(t);
-            return "Your booking for the movie " + s.getMovie().getName() + " at "+s.getTheater().getName()+" is successfully done.";
+            return TransactionToResponse.convertEntity(t);
         }
         catch (WrongArgumentException e) {
             throw new WrongArgumentException(e.getMessage());

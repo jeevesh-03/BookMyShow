@@ -14,6 +14,7 @@ import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.services.MovieService;
 import com.sampleProject.bookMyShowApp.services.ShowDetailsService;
 import com.sampleProject.bookMyShowApp.services.TheaterService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +22,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ShowDetailsServiceImplementation implements ShowDetailsService {
-    @Autowired
-    private ShowDetailsRepository showDetailsRepository;
-    @Autowired
-    private MovieService movieService;
-    @Autowired
-    private TheaterService theaterService;
-    @Autowired
-    private MovieRepository movieRepository;
-    @Autowired
-    private TheaterRepository theaterRepository;
-
+    private final ShowDetailsRepository showDetailsRepository;
+    private final MovieService movieService;
+    private final TheaterService theaterService;
+    private final MovieRepository movieRepository;
+    private final TheaterRepository theaterRepository;
 
     @Override
     public void saveShowDetails(Show s){
@@ -122,7 +118,7 @@ public class ShowDetailsServiceImplementation implements ShowDetailsService {
             throw new NotFoundException(e.getMessage());
         }
         catch (Exception e) {
-            throw new RuntimeException("An unexpected error occurred.");
+            throw new RuntimeException("An unexpected err.");
         }
     }
 }

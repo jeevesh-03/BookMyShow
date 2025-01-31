@@ -11,6 +11,7 @@ import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.response.UserResponse;
 import com.sampleProject.bookMyShowApp.services.ShowDetailsService;
 import com.sampleProject.bookMyShowApp.services.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImplementation implements UserService {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ShowDetailsService showDetailsService;
+    private final UserRepository userRepository;
+    private final ShowDetailsService showDetailsService;
 
     @Override
     public void saveUser(Users u){

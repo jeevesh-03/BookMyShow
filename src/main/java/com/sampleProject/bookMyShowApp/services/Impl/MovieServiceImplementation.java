@@ -12,127 +12,117 @@ import com.sampleProject.bookMyShowApp.repositories.ShowDetailsRepository;
 import com.sampleProject.bookMyShowApp.response.MovieResponse;
 import com.sampleProject.bookMyShowApp.response.ShowResponse;
 import com.sampleProject.bookMyShowApp.services.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class MovieServiceImplementation implements MovieService {
-    @Autowired
-    private MovieRepository movieRepository;
 
-    @Autowired
-    private ShowDetailsRepository showDetailsRepository;
+    private final MovieRepository movieRepository;
+    private final ShowDetailsRepository showDetailsRepository;
 
     @Override
-    public Mono<MovieResponse>saveMovie(String name, boolean ageRestricted) throws WrongArgumentException{
+    public Mono<MovieResponse> saveMovie(String name, boolean ageRestricted) throws WrongArgumentException {
         try {
-            if(name==null){
+            if (name == null) {
                 throw new WrongArgumentException("Movie name is empty!");
             }
-            Movie m=new Movie(name,ageRestricted);
+            Movie m = new Movie(name, ageRestricted);
             movieRepository.save(m);
             return Mono.just(MovieToResponse.convertEntity(m));
-        }
-        catch (WrongArgumentException e) {
+        } catch (WrongArgumentException e) {
             return Mono.error(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
     @Override
-    public Mono<List<MovieResponse>> getAllMovies(){
+    public Mono<List<MovieResponse>> getAllMovies() {
         return Mono.just(MovieToResponse.convertList(movieRepository.findAll()));
     }
 
     @Override
-    public Movie findMovieByName(String name){
+    public Movie findMovieByName(String name) {
         return movieRepository.findMovieByName(name);
     }
 
     @Override
-    public Movie findMovieById(Long id){
+    public Movie findMovieById(Long id) {
         return movieRepository.findMovieById(id);
     }
 
     @Override
-    public Mono<List<ShowResponse>> findShowsByMovie(String movieName) throws NotFoundException{
+    public Mono<List<ShowResponse>> findShowsByMovie(String movieName) throws NotFoundException {
         try {
-            if(movieRepository.findMovieByName(movieName)==null){
+            if (movieRepository.findMovieByName(movieName) == null) {
                 throw new NotFoundException("Movie not found");
             }
-            List<Show> shows= showDetailsRepository.findShowsByMovie(movieName);
+            List<Show> shows = showDetailsRepository.findShowsByMovie(movieName);
             return Mono.just(ShowToResponse.convertList(shows));
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             return Mono.error(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
     @Override
-    public Mono<Integer> getRevenueOfMovie(String movieName) throws NotFoundException{
+    public Mono<Integer> getRevenueOfMovie(String movieName) throws NotFoundException {
         try {
-            if(movieRepository.findMovieByName(movieName)==null){
+            if (movieRepository.findMovieByName(movieName) == null) {
                 throw new NotFoundException("Movie not found");
             }
-            Movie m=findMovieByName(movieName);
-            List<Show> shows=m.getShows();
-            Integer revenue=0;
-            for(Show sh: shows){
-                List<Transaction> allTransactions=sh.getTransactions();
-                for(Transaction transaction: allTransactions){
-                    revenue+=transaction.getTicketCount()*sh.getPrice();
+            Movie m = findMovieByName(movieName);
+            List<Show> shows = m.getShows();
+            Integer revenue = 0;
+            for (Show sh : shows) {
+                List<Transaction> allTransactions = sh.getTransactions();
+                for (Transaction transaction : allTransactions) {
+                    revenue += transaction.getTicketCount() * sh.getPrice();
                 }
             }
             return Mono.just(revenue);
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             return Mono.error(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred.");
         }
     }
 
     @Override
-    public Mono<MovieResponse> getMovie(String name, Long id) throws WrongArgumentException,NotFoundException{
+    public Mono<MovieResponse> getMovie(String name, Long id) throws WrongArgumentException, NotFoundException {
         try {
-            if(name==null && id==null){
+            if (name == null && id == null) {
                 throw new WrongArgumentException("Name and Id provided is null");
             }
-            if(name==null){
-                Movie m=movieRepository.findMovieById(id);
-                if(m==null){
+            if (name == null) {
+                Movie m = movieRepository.findMovieById(id);
+                if (m == null) {
                     throw new NotFoundException("No movie exists with given id");
                 }
                 return Mono.just(MovieToResponse.convertEntity(m));
             }
-            if(id==null){
-                Movie m=movieRepository.findMovieByName(name);
-                if(m==null){
+            if (id == null) {
+                Movie m = movieRepository.findMovieByName(name);
+                if (m == null) {
                     throw new NotFoundException("No movie exists with given name");
                 }
                 return Mono.just(MovieToResponse.convertEntity(m));
             }
-            if(movieRepository.findMovieById(id)!=movieRepository.findMovieByName(name)){
+            if (movieRepository.findMovieById(id) != movieRepository.findMovieByName(name)) {
                 throw new NotFoundException("No movie exists with given name and id");
             }
             return Mono.just(MovieToResponse.convertEntity(movieRepository.findMovieByName(name)));
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             return Mono.error(e);
-        }
-        catch (WrongArgumentException e) {
+        } catch (WrongArgumentException e) {
             return Mono.error(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred.");
         }
     }

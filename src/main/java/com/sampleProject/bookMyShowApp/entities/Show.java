@@ -1,14 +1,8 @@
 package com.sampleProject.bookMyShowApp.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,18 +11,18 @@ public class Show {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name="theater_id")
+    @JoinColumn(name = "theater_id")
     //@JsonBackReference("show-theater")
     private Theater theater;
     @ManyToOne
-    @JoinColumn(name="movie_id")
+    @JoinColumn(name = "movie_id")
     private Movie movie;
     @OneToMany(mappedBy = "show", cascade = CascadeType.ALL)
 //    @JsonManagedReference("def")
 //    @JsonIgnore
     private List<Transaction> transactions;
 
-    public Show(){
+    public Show() {
 
     }
 
